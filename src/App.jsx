@@ -436,3 +436,7 @@ const [showEditProfile, setShowEditProfile] = useState(false);
           )}
         </div>
       </nav>
+      {showEditProfile && <EditProfileModal user={user} profile={profile} onClose={() => setShowEditProfile(false)} onSaved={setProfile} />}
+    </div>
+  );
+}
