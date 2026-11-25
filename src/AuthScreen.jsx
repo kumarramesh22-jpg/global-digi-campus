@@ -7,6 +7,7 @@ import { GraduationCap } from 'lucide-react';
 
 export default function AuthScreen({ onSuccess }) {
   const [isRegister, setIsRegister] = useState(false);
+  const [roleType, setRoleType] = useState('student');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -24,7 +25,8 @@ export default function AuthScreen({ onSuccess }) {
   const [authError, setAuthError] = useState('');
 
   const handleIdUpload = (e) => {
-    const file = e.target.files?.[0];
+  const file = e.target.files?.[0];
+
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -48,12 +50,13 @@ export default function AuthScreen({ onSuccess }) {
     try {
       if (isRegister) {
         if (!collegeIdNumber.trim()) {
-          setAuthError('College ID Card Number is mandatory.');
+          setAuthError('Institutional ID Card Number is mandatory.');
           return;
         }
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         const isAcademicEmail = /\.(edu|ac\.in|edu\.in|ac\.uk|edu\.au)$/i.test(email);
         const isSuperAdmin = mobile.trim() === ADMIN_MOBILE;
+        const isCollegeAdmin = roleType === 'college_admin';
         const finalCollege = college === 'Other' || customCollege ? customCollege || 'Other College' : college;
 
         const newProfile = {
@@ -69,8 +72,8 @@ export default function AuthScreen({ onSuccess }) {
           district,
           university,
           college: finalCollege,
-          role: isSuperAdmin ? 'admin' : 'student',
-          isVerified: isAcademicEmail || isSuperAdmin,
+          role: isSuperAdmin ? 'admin' : roleType,
+          isVerified: isSuperAdmin || (!isCollegeAdmin && isAcademicEmail),
           karmaPoints: 10,
           createdAt: serverTimestamp()
         };
@@ -91,35 +94,39 @@ export default function AuthScreen({ onSuccess }) {
   const collegesList = (((EDUCATION_DATA[country] || {})[stateName] || {})[district] || {})[university] || ['Other'];
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col justify-center py-8 px-4">
-      <div className="max-w-md w-full mx-auto bg-white border border-slate-200 rounded-xl shadow-sm p-6">
-        <div className="flex items-center gap-2 justify-center mb-2">
-          <GraduationCap className="w-8 h-8 text-slate-800" />
-          <h1 className="text-2xl font-bold text-slate-900">Global Digi Campus</h1>
+    <div className="min-h-screen bg-[#f0f2f5] flex flex-col justify-center py-8 px-4">
+      <div className="max-w-md w-full mx-auto bg-white border border-slate-200 rounded-2xl shadow-md p-6">
+        <div className="flex items-center gap-2 justify-center mb-1">
+          <GraduationCap className="w-8 h-8 text-blue-600" />
+          <h1 className="text-2xl font-extrabold text-slate-900">Global Digi Campus</h1>
         </div>
-        <p className="text-center text-xs text-slate-500 mb-6">
-          Exclusive Verified Student-to-Student Global Network • Zero Outsiders
-        </p>
+        <p className="text-center text-xs text-slate-500 mb-5">Verified Students & College Administration Only</p>
 
-        {authError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 text-xs p-3 rounded-lg mb-4">{authError}</div>
-        )}
+        {authError && <div className="bg-red-50 border border-red-200 text-red-700 text-xs p-3 rounded-xl mb-4">{authError}</div>}
 
         <form onSubmit={handleAuth} className="space-y-3 text-sm">
           {isRegister && (
             <>
-              <input type="text" placeholder="Full Name (as on College ID)" required value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2" />
-              <div className="grid grid-cols-2 gap-2">
-                <input type="tel" placeholder="Mobile Number" required value={mobile} onChange={(e) => setMobile(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2" />
-                <input type="text" placeholder="Course (e.g., MBA, B.Tech)" required value={course} onChange={(e) => setCourse(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2" />
+              <div className="grid grid-cols-2 gap-2 bg-blue-50 p-1.5 rounded-xl border border-blue-200">
+                <button type="button" onClick={() => { setRoleType('student'); setCourse('MBA'); }} className={`py-1.5 rounded-lg text-xs font-bold ${roleType === 'student' ? 'bg-blue-600 text-white' : 'text-blue-700'}`}>
+                  🎓 Student Login
+                </button>
+                <button type="button" onClick={() => { setRoleType('college_admin'); setCourse('Professor / Dean'); }} className={`py-1.5 rounded-lg text-xs font-bold ${roleType === 'college_admin' ? 'bg-indigo-700 text-white' : 'text-indigo-800'}`}>
+                  🏛️ College Admin (Prof/Dean)
+                </button>
               </div>
 
-              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
-                <label className="block text-xs font-semibold text-slate-700">Select Campus Location</label>
+              <input type="text" placeholder="Full Name (as on Institutional ID)" required value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full border border-slate-300 rounded-xl px-3 py-2" />
+              <div className="grid grid-cols-2 gap-2">
+                <input type="tel" placeholder="Mobile Number" required value={mobile} onChange={(e) => setMobile(e.target.value)} className="w-full border border-slate-300 rounded-xl px-3 py-2" />
+                <input type="text" placeholder={roleType === 'college_admin' ? 'Designation (e.g. Dean, HOD)' : 'Course (e.g. MBA, B.Tech)'} required value={course} onChange={(e) => setCourse(e.target.value)} className="w-full border border-slate-300 rounded-xl px-3 py-2" />
+              </div>
+
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                <label className="block text-xs font-semibold text-slate-700">Campus Location</label>
                 <select value={country} onChange={(e) => { setCountry(e.target.value); setStateName('Other'); setDistrict('Other'); setUniversity('Other'); setCollege('Other'); }} className="w-full border border-slate-300 rounded-lg px-2 py-1.5 bg-white text-xs">
                   {Object.keys(EDUCATION_DATA).map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
-
                 {country === 'India' && (
                   <>
                     <div className="grid grid-cols-2 gap-2">
@@ -138,36 +145,30 @@ export default function AuthScreen({ onSuccess }) {
                     </select>
                   </>
                 )}
-
                 {(country !== 'India' || college === 'Other') && (
-                  <input type="text" placeholder="Type Your University / College Name" required value={customCollege} onChange={(e) => setCustomCollege(e.target.value)} className="w-full border border-slate-300 rounded-lg px-2 py-1.5 bg-white text-xs" />
+                  <input type="text" placeholder="Type University / College Name" required value={customCollege} onChange={(e) => setCustomCollege(e.target.value)} className="w-full border border-slate-300 rounded-lg px-2 py-1.5 bg-white text-xs" />
                 )}
               </div>
 
-              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
-                <label className="block text-xs font-semibold text-slate-700">Student ID Verification</label>
-                <input type="text" placeholder="College Roll No / ID Card Number" required value={collegeIdNumber} onChange={(e) => setCollegeIdNumber(e.target.value)} className="w-full border border-slate-300 rounded-lg px-2 py-1.5 bg-white text-xs" />
-                <span className="text-[11px] text-slate-500 block">Upload College ID Photo (Instant entry if using .edu / .ac.in)</span>
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                <label className="block text-xs font-semibold text-slate-700">{roleType === 'college_admin' ? 'Faculty / Dean ID Verification' : 'Student ID Verification'}</label>
+                <input type="text" placeholder={roleType === 'college_admin' ? 'Faculty / Employee ID Number' : 'College Roll No / ID Number'} required value={collegeIdNumber} onChange={(e) => setCollegeIdNumber(e.target.value)} className="w-full border border-slate-300 rounded-lg px-2 py-1.5 bg-white text-xs" />
                 <input type="file" accept="image/*" onChange={handleIdUpload} className="text-xs w-full" />
               </div>
             </>
           )}
 
-          <input type="email" placeholder="Email (.edu / .ac.in for instant approval)" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2" />
-          <input type="password" placeholder="Create Password (min 6 chars)" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          <input type="email" placeholder="Institutional or Personal Email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border border-slate-300 rounded-xl px-3 py-2" />
+          <input type="password" placeholder="Password (min 6 chars)" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border border-slate-300 rounded-xl px-3 py-2" />
 
-          <button type="submit" className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2.5 rounded-lg transition">
-            {isRegister ? 'Verify & Join Global Campus' : 'Student Login'}
+          <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl">
+            {isRegister ? 'Submit ID & Register' : 'Login to Campus'}
           </button>
         </form>
 
-        <button onClick={() => setIsRegister(!isRegister)} className="w-full text-center text-xs text-slate-600 underline mt-4">
-          {isRegister ? 'Already verified? Login here' : 'New Student? Verify College ID & Register'}
+        <button onClick={() => setIsRegister(!isRegister)} className="w-full text-center text-xs text-blue-600 font-semibold mt-4">
+          {isRegister ? 'Already registered? Login here' : 'New Student / Professor / Dean? Verify ID'}
         </button>
-
-        <p className="text-[10px] text-slate-400 text-center mt-6">
-          Independent student peer network. Not officially affiliated with any listed university.
-        </p>
       </div>
     </div>
   );
