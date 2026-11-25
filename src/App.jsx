@@ -332,25 +332,21 @@ const [showEditProfile, setShowEditProfile] = useState(false);
           </div>
         )}
 
-        {activeTab === 'admin' && profile.role === 'admin' && (
+           {activeTab === 'faculty_desk' && (profile.role === 'college_admin' || profile.role === 'admin') && (
           <div className="space-y-4">
-            <form onSubmit={handlePostAnnouncement} className="bg-white rounded-2xl p-4 shadow-sm border border-amber-200 space-y-2">
-              <h2 className="font-bold text-xs text-amber-800 uppercase">Super Admin: Pin Global Announcement Banner</h2>
-              <div className="flex gap-2">
-                <input type="text" placeholder="Write announcement for all students worldwide..." value={newNotice} onChange={(e) => setNewNotice(e.target.value)} className="flex-1 border border-slate-300 rounded-xl px-3 py-2 text-xs" />
-                <button type="submit" className="bg-amber-500 text-white font-bold text-xs px-4 py-2 rounded-xl">Broadcast</button>
-              </div>
-            </form>
+            <div className="bg-gradient-to-r from-indigo-700 to-blue-700 text-white rounded-2xl p-4 shadow-sm">
+              <h2 className="font-bold text-sm">🏛️ Faculty & Dean Academic Desk — {profile.college}</h2>
+              <p className="text-xs text-indigo-100 mt-1">Verify students from your institution and review student posts requesting faculty guidance.</p>
+            </div>
 
             <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
-              <h2 className="font-bold text-sm text-blue-700">Super Admin: Student College ID Verification ({peers.length} Total)</h2>
-              {peers.map((student) => (
+              <h3 className="font-bold text-xs text-indigo-700 uppercase">Campus Student Verification ({profile.college})</h3>
+              {peers.filter((s) => s.role === 'student' && (profile.role === 'admin' || s.college === profile.college)).map((student) => (
                 <div key={student.id} className="border border-slate-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="space-y-1 text-xs">
                     <div className="font-bold text-slate-900">{student.fullName} ({student.course}) — {student.isVerified ? '✅ Verified' : '⏳ Pending'}</div>
-                    <div className="text-slate-600">{student.college} • {student.university} ({student.country})</div>
-                    <div className="text-slate-500">ID No: <strong>{student.collegeIdNumber}</strong> • Mobile: {student.mobile}</div>
-                    {student.idPhotoBase64 && <img src={student.idPhotoBase64} alt="College ID" className="w-40 rounded-lg border border-slate-300 mt-1" />}
+                    <div className="text-slate-500">Roll/ID: <strong>{student.collegeIdNumber}</strong> • Mobile: {student.mobile}</div>
+                    {student.idPhotoBase64 && <img src={student.idPhotoBase64} alt="Student ID" className="w-36 rounded-lg border border-slate-300 mt-1" />}
                   </div>
                   <div className="flex gap-2">
                     <button onClick={() => handleVerifyStudent(student.id, true)} className="bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Approve</button>
@@ -361,19 +357,57 @@ const [showEditProfile, setShowEditProfile] = useState(false);
             </div>
           </div>
         )}
+
+        {activeTab === 'admin' && profile.role === 'admin' && (
+          <div className="space-y-4">
+            <form onSubmit={handlePostAnnouncement} className="bg-white rounded-2xl p-4 shadow-sm border border-amber-200 space-y-2">
+              <h2 className="font-bold text-xs text-amber-800 uppercase">👑 Super Admin: Pin Global Announcement Banner</h2>
+              <div className="flex gap-2">
+                <input type="text" placeholder="Write announcement for all students worldwide..." value={newNotice} onChange={(e) => setNewNotice(e.target.value)} className="flex-1 border border-slate-300 rounded-xl px-3 py-2 text-xs" />
+                <button type="submit" className="bg-amber-500 text-white font-bold text-xs px-4 py-2 rounded-xl">Broadcast</button>
+              </div>
+            </form>
+
+            <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+              <h2 className="font-bold text-sm text-blue-700">👑 Super Admin: All Faculty, Deans & Students ({peers.length} Total)</h2>
+              {peers.map((member) => (
+                <div key={member.id} className="border border-slate-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="space-y-1 text-xs">
+                    <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                      {member.fullName} ({member.course})
+                      {member.role === 'college_admin' && <span className="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full text-[10px]">🏛️ PROF / DEAN</span>}
+                      <span>— {member.isVerified ? '✅ Verified' : '⏳ Pending'}</span>
+                    </div>
+                    <div className="text-slate-600">{member.college} • {member.university} ({member.country})</div>
+                    <div className="text-slate-500">ID No: <strong>{member.collegeIdNumber}</strong> • Mobile: {member.mobile}</div>
+                    {member.idPhotoBase64 && <img src={member.idPhotoBase64} alt="ID Card" className="w-40 rounded-lg border border-slate-300 mt-1" />}
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => handleVerifyStudent(member.id, true)} className="bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Approve</button>
+                    <button onClick={() => handleVerifyStudent(member.id, false)} className="bg-red-50 text-red-600 border border-red-200 text-xs font-bold px-3 py-1.5 rounded-xl">Block</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
 
-      <nav className="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 py-2 px-2 shadow-lg z-20">
+      </main>
+
+          <nav className="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 py-2 px-1 shadow-lg z-20">
         <div className="max-w-4xl mx-auto flex justify-around text-[10px] font-bold text-slate-500">
           <button onClick={() => setActiveTab('feed')} className={`flex flex-col items-center gap-0.5 ${activeTab === 'feed' ? 'text-blue-600' : ''}`}><BookOpen className="w-5 h-5" /> Feed</button>
           <button onClick={() => setActiveTab('peers')} className={`flex flex-col items-center gap-0.5 ${activeTab === 'peers' ? 'text-sky-600' : ''}`}><Users className="w-5 h-5" /> Peers</button>
           <button onClick={() => setActiveTab('store')} className={`flex flex-col items-center gap-0.5 ${activeTab === 'store' ? 'text-indigo-600' : ''}`}><ShoppingBag className="w-5 h-5" /> Projects ₹</button>
           <button onClick={() => setActiveTab('support')} className={`flex flex-col items-center gap-0.5 ${activeTab === 'support' ? 'text-pink-600' : ''}`}><HeartHandshake className="w-5 h-5" /> Support</button>
           <button onClick={() => setActiveTab('chat')} className={`flex flex-col items-center gap-0.5 ${activeTab === 'chat' ? 'text-blue-600' : ''}`}><MessageSquare className="w-5 h-5" /> Chat</button>
-          {profile.role === 'admin' && <button onClick={() => setActiveTab('admin')} className={`flex flex-col items-center gap-0.5 ${activeTab === 'admin' ? 'text-amber-600' : ''}`}><ShieldCheck className="w-5 h-5" /> Admin</button>}
-       {showEditProfile && <EditProfileModal user={user} profile={profile} onClose={() => setShowEditProfile(false)} onSaved={setProfile} />}
-      </div>
+          {(profile.role === 'college_admin' || profile.role === 'admin') && (
+            <button onClick={() => setActiveTab('faculty_desk')} className={`flex flex-col items-center gap-0.5 ${activeTab === 'faculty_desk' ? 'text-indigo-700' : ''}`}><GraduationCap className="w-5 h-5" /> Faculty</button>
+          )}
+          {profile.role === 'admin' && (
+            <button onClick={() => setActiveTab('admin')} className={`flex flex-col items-center gap-0.5 ${activeTab === 'admin' ? 'text-amber-600' : ''}`}><ShieldCheck className="w-5 h-5" /> Super Admin</button>
+          )}
+        </div>
       </nav>
-    </div>
-  );
-}
+
