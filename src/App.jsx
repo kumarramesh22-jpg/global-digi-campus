@@ -357,6 +357,31 @@ const [showEditProfile, setShowEditProfile] = useState(false);
             </div>
           </div>
         )}
+        {activeTab === 'faculty_desk' && (profile.role === 'college_admin' || profile.role === 'admin') && (
+          <div className="space-y-4">
+            <div className="bg-gradient-to-r from-indigo-700 to-blue-700 text-white rounded-2xl p-4 shadow-sm">
+              <h2 className="font-bold text-sm">🏛️ Faculty & Dean Academic Desk — {profile.college}</h2>
+              <p className="text-xs text-indigo-100 mt-1">Verify students from your institution and review student posts requesting faculty guidance.</p>
+            </div>
+
+            <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+              <h3 className="font-bold text-xs text-indigo-700 uppercase">Campus Student Verification ({profile.college})</h3>
+              {peers.filter((s) => s.role === 'student' && (profile.role === 'admin' || s.college === profile.college)).map((student) => (
+                <div key={student.id} className="border border-slate-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="space-y-1 text-xs">
+                    <div className="font-bold text-slate-900">{student.fullName} ({student.course}) — {student.isVerified ? '✅ Verified' : '⏳ Pending'}</div>
+                    <div className="text-slate-500">Roll/ID: <strong>{student.collegeIdNumber}</strong> • Mobile: {student.mobile}</div>
+                    {student.idPhotoBase64 && <img src={student.idPhotoBase64} alt="Student ID" className="w-36 rounded-lg border border-slate-300 mt-1" />}
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => handleVerifyStudent(student.id, true)} className="bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Approve</button>
+                    <button onClick={() => handleVerifyStudent(student.id, false)} className="bg-red-50 text-red-600 border border-red-200 text-xs font-bold px-3 py-1.5 rounded-xl">Block</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {activeTab === 'admin' && profile.role === 'admin' && (
           <div className="space-y-4">
@@ -391,11 +416,12 @@ const [showEditProfile, setShowEditProfile] = useState(false);
             </div>
           </div>
         )}
-      </main>
+       
+      
 
       </main>
 
-          <nav className="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 py-2 px-1 shadow-lg z-20">
+             <nav className="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 py-2 px-1 shadow-lg z-20">
         <div className="max-w-4xl mx-auto flex justify-around text-[10px] font-bold text-slate-500">
           <button onClick={() => setActiveTab('feed')} className={`flex flex-col items-center gap-0.5 ${activeTab === 'feed' ? 'text-blue-600' : ''}`}><BookOpen className="w-5 h-5" /> Feed</button>
           <button onClick={() => setActiveTab('peers')} className={`flex flex-col items-center gap-0.5 ${activeTab === 'peers' ? 'text-sky-600' : ''}`}><Users className="w-5 h-5" /> Peers</button>
@@ -410,4 +436,3 @@ const [showEditProfile, setShowEditProfile] = useState(false);
           )}
         </div>
       </nav>
-
