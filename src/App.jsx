@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { auth, db } from './firebase';
 import AuthScreen from './AuthScreen';
 import ProjectStore from './ProjectStore';
+import EditProfileModal from './EditProfileModal';
+
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc, deleteDoc, arrayUnion, serverTimestamp } from 'firebase/firestore';
 import { GraduationCap, Users, BookOpen, HeartHandshake, ShieldCheck, MessageSquare, LogOut, PlusCircle, CheckCircle, Globe, Search, AlertTriangle, Trash2, ThumbsUp, Megaphone, ShoppingBag } from 'lucide-react';
@@ -10,6 +12,7 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+const [showEditProfile, setShowEditProfile] = useState(false);
 
   const [activeTab, setActiveTab] = useState('feed');
   const [posts, setPosts] = useState([]);
@@ -148,7 +151,10 @@ export default function App() {
               <p className="text-[11px] text-blue-100">{profile.college} • {profile.course}</p>
             </div>
           </div>
-          <button onClick={() => signOut(auth)} className="text-xs bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-full font-semibold flex items-center gap-1">
+         <button onClick={() => setShowEditProfile(true)} className="text-xs bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-full font-semibold flex items-center gap-1">
+  <UserCog className="w-3.5 h-3.5" /> Edit
+</button>
+ <button onClick={() => signOut(auth)} className="text-xs bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-full font-semibold flex items-center gap-1">
             <LogOut className="w-3.5 h-3.5" /> Logout
           </button>
         </div>
@@ -365,7 +371,8 @@ export default function App() {
           <button onClick={() => setActiveTab('support')} className={`flex flex-col items-center gap-0.5 ${activeTab === 'support' ? 'text-pink-600' : ''}`}><HeartHandshake className="w-5 h-5" /> Support</button>
           <button onClick={() => setActiveTab('chat')} className={`flex flex-col items-center gap-0.5 ${activeTab === 'chat' ? 'text-blue-600' : ''}`}><MessageSquare className="w-5 h-5" /> Chat</button>
           {profile.role === 'admin' && <button onClick={() => setActiveTab('admin')} className={`flex flex-col items-center gap-0.5 ${activeTab === 'admin' ? 'text-amber-600' : ''}`}><ShieldCheck className="w-5 h-5" /> Admin</button>}
-        </div>
+       {showEditProfile && <EditProfileModal user={user} profile={profile} onClose={() => setShowEditProfile(false)} onSaved={setProfile} />}
+      </div>
       </nav>
     </div>
   );
