@@ -189,7 +189,7 @@ const [showEditProfile, setShowEditProfile] = useState(false);
                   <option value="notes">📚 Notes & Study Material</option>
                   <option value="project">💡 Project Idea / Help</option>
                   <option value="career">🎯 Career & Competitive Exams</option>
-                  <option value="games">🎮 Brain Games & Quiz</option>
+                  <option value="games">🎮 Entertainment , Quiz & Fun</option>
                 </select>
               </div>
               <input type="text" placeholder="What's your topic? (e.g., MBA Operations Research Notes)" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm" />
