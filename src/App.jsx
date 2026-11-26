@@ -160,7 +160,8 @@ const allDisplayPosts = posts.length > 0 ? [...posts, ...STARTER_GLOBAL_POSTS] :
       <header className="bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-500 text-white sticky top-0 z-20 px-4 py-3 shadow-md">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="bg-white/20 p-2 rounded-xl"><GraduationCap className="w-6 h-6 text-white" /></div>
+           <img src="/logo.png" alt="Global Digi Campus Logo" className="w-10 h-10 rounded-xl object-cover bg-white p-0.5 shadow-sm" />
+
             <div>
               <h1 className="font-extrabold text-base tracking-tight leading-tight">Global Digi Campus</h1>
               <p className="text-[11px] text-blue-100">{profile.college} • {profile.course}</p>
