@@ -287,7 +287,7 @@ const allDisplayPosts = posts.length > 0 ? [...posts, ...STARTER_GLOBAL_POSTS] :
 </div>
 
                   </div>
-                </div>
+                
               ))}
             </div>
           
