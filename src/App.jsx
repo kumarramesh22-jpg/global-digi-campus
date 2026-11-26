@@ -37,11 +37,17 @@ const [showEditProfile, setShowEditProfile] = useState(false);
   const [dailyNews, setDailyNews] = useState([]);
 
   useEffect(() => {
-   fetch("https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=3")
+    fetch("https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=6")
       .then((res) => res.json())
-      .then((data) => setDailyNews(data.hits || []))
+      .then((data) => {
+        const clean = (data.hits || []).filter(
+          (item) => item.title && !/\b(shit|fuck|damn|sex|porn|kill|murder|drug)\b/i.test(item.title)
+        );
+        setDailyNews(clean.slice(0, 3));
+      })
       .catch(() => {});
   }, []);
+
 
   useEffect(() => {
     return onAuthStateChanged(auth, async (currentUser) => {
