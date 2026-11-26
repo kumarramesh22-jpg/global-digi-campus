@@ -290,7 +290,7 @@ const allDisplayPosts = posts.length > 0 ? [...posts, ...STARTER_GLOBAL_POSTS] :
                 
               ))}
             </div>
-          
+          </>
         )}
 
         {activeTab === 'store' && <ProjectStore user={user} profile={profile} />}
