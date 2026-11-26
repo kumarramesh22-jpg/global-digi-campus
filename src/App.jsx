@@ -1,3 +1,5 @@
+import { GLOBAL_STORIES, STARTER_GLOBAL_POSTS } from "./data";
+
 import React, { useState, useEffect } from 'react';
 import { auth, db } from './firebase';
 import AuthScreen from './AuthScreen';
@@ -134,8 +136,9 @@ const [showEditProfile, setShowEditProfile] = useState(false);
       </div>
     );
   }
+const allDisplayPosts = posts.length > 0 ? [...posts, ...STARTER_GLOBAL_POSTS] : STARTER_GLOBAL_POSTS;
+  const filteredPosts = allDisplayPosts.filter((p) => {
 
-  const filteredPosts = posts.filter((p) => {
     if (activeTab === 'support') return p.category === 'moral_support';
     if (selectedCategory !== 'all' && p.category !== selectedCategory) return false;
     if (searchQuery && !`${p.title} ${p.content} ${p.authorCourse} ${p.authorCollege}`.toLowerCase().includes(searchQuery.toLowerCase())) return false;
@@ -171,6 +174,26 @@ const [showEditProfile, setShowEditProfile] = useState(false);
           </button>
         </div>
       </header>
+{/* Facebook-Style Global Campus Stories */}
+<div className="max-w-4xl mx-auto px-4 pt-4">
+  <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+    {GLOBAL_STORIES.map((story) => (
+      <div
+        key={story.id}
+        onClick={() => alert(`${story.name} (${story.college}):\n\n${story.text}`)}
+        className="flex-shrink-0 w-28 bg-white rounded-2xl p-2.5 shadow-sm border border-slate-100 cursor-pointer hover:scale-105 transition text-center"
+      >
+        <div className={`w-12 h-12 mx-auto rounded-full p-0.5 bg-gradient-to-tr ${story.color}`}>
+          <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-xl">
+            {story.badge}
+          </div>
+        </div>
+        <p className="text-xs font-bold text-slate-800 mt-2 truncate">{story.name}</p>
+        <p className="text-[10px] text-slate-500 truncate">{story.college}</p>
+      </div>
+    ))}
+  </div>
+</div>
 
       <main className="max-w-4xl mx-auto p-4 space-y-4">
         {announcements.length > 0 && (
@@ -245,10 +268,24 @@ const [showEditProfile, setShowEditProfile] = useState(false);
                   <h3 className="font-bold text-slate-900 text-sm">{post.title}</h3>
                   <p className="text-sm text-slate-700 whitespace-pre-line">{post.content}</p>
                   {post.needsFaculty && <span className="inline-block text-[11px] bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-full font-medium">🎓 Faculty / Mentor Review Requested</span>}
-                  <div className="pt-2 border-t border-slate-100 flex items-center gap-4">
-                    <button onClick={() => handleLikePost(post.id)} className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                      <ThumbsUp className="w-3.5 h-3.5" /> Helpful ({post.likes?.length || 0})
-                    </button>
+                  
+                    <div className="pt-2 border-t border-slate-100 flex items-center gap-4">
+  <button onClick={() => handleLikePost(post.id)} className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1">
+    <ThumbsUp className="w-3.5 h-3.5" /> Helpful ({post.likes?.length || 0})
+  </button>
+
+  <a
+    href={`https://wa.me/?text=${encodeURIComponent(
+      `📚 *${post.title}*\n${post.content}\n\nJoin verified students worldwide on Global Digi Campus:https://global-digi-campus.vercel.app`
+    )}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 px-3 py-1 rounded-full transition"
+  >
+    📲 Share on WhatsApp
+  </a>
+</div>
+
                   </div>
                 </div>
               ))}
