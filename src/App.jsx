@@ -37,8 +37,7 @@ const [showEditProfile, setShowEditProfile] = useState(false);
   const [dailyNews, setDailyNews] = useState([]);
 
   useEffect(() => {
-    fetch("https://algolia.com")
-
+   fetch("https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=3")
       .then((res) => res.json())
       .then((data) => setDailyNews(data.hits || []))
       .catch(() => {});
