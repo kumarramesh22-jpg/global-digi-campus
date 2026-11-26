@@ -10,7 +10,7 @@ import StudentIdGate from "./components/StudentIdGate";
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc, deleteDoc, arrayUnion, serverTimestamp } from 'firebase/firestore';
 import { GraduationCap, Users, BookOpen, HeartHandshake, ShieldCheck, MessageSquare, LogOut, PlusCircle, CheckCircle, Globe, Search, AlertTriangle, Trash2, ThumbsUp, Megaphone, ShoppingBag,UserCog  } from 'lucide-react';
-import StudentIdGate from "./components/StudentIdGate";
+
 
 export default function App() {
   const [user, setUser] = useState(null);
