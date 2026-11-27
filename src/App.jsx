@@ -126,7 +126,7 @@ const [showEditProfile, setShowEditProfile] = useState(false);
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-blue-600 font-bold">Loading Global Digi Campus...</div>;
-   if (!profile.isVerified) {
+   if (!profile?.isVerified) {
     return (
       <StudentIdGate
         user={user}
